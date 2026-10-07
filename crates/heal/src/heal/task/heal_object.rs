@@ -633,12 +633,19 @@ impl HealTask {
             Some(HealObjectDisposition::AuthoritativelyAbsent)
         );
         let receipt_missing = storage_result.receipt.is_none();
+        // MetadataHealthy never verifies for a Decode request (see verified_for),
+        // so this combination can never succeed on retry either.
+        let receipt_is_unverifiable_metadata_only = expected.kind == HealObjectKind::Decode
+            && matches!(
+                storage_result.receipt.as_ref().map(|receipt| &receipt.disposition),
+                Some(HealObjectDisposition::MetadataHealthy)
+            );
         if !self
             .record_verified_storage_receipt(expected.clone(), storage_result.receipt)
             .await
         {
             let ok_drive_state = DriveState::Ok.to_string();
-            let healthy_legacy_without_repair = receipt_missing
+            let healthy_legacy_without_repair = (receipt_missing || receipt_is_unverifiable_metadata_only)
                 && storage_result.item.detail == rustfs_heal_contracts::heal_channel::LEGACY_OBJECT_IDENTITY_UNVERIFIED_DETAIL
                 && storage_result.item.drives_healed() == Some(0)
                 && !storage_result.item.after.drives.is_empty()
