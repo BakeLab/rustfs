@@ -655,6 +655,18 @@ impl HealTask {
                     .drives
                     .iter()
                     .all(|drive| drive.state == ok_drive_state);
+            warn!(
+                target: "rustfs::heal::debug_probe",
+                bucket,
+                object,
+                healthy_legacy_without_repair,
+                receipt_missing,
+                receipt_is_unverifiable_metadata_only,
+                detail = %storage_result.item.detail,
+                drives_healed = ?storage_result.item.drives_healed(),
+                expected_kind = ?expected.kind,
+                "debug_probe: healthy_legacy_without_repair evaluated"
+            );
             if healthy_legacy_without_repair {
                 self.outcome.write().await.record(HealObjectOutcome {
                     identity: expected,
