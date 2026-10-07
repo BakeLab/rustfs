@@ -664,6 +664,8 @@ impl HealTask {
                 receipt_is_unverifiable_metadata_only,
                 detail = %storage_result.item.detail,
                 drives_healed = ?storage_result.item.drives_healed(),
+                after_drives_empty = storage_result.item.after.drives.is_empty(),
+                after_drives_states = ?storage_result.item.after.drives.iter().map(|d| d.state.clone()).collect::<Vec<_>>(),
                 expected_kind = ?expected.kind,
                 "debug_probe: healthy_legacy_without_repair evaluated"
             );
