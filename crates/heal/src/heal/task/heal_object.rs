@@ -512,6 +512,11 @@ impl HealTask {
             Some(HealObjectDisposition::AuthoritativelyAbsent)
         );
         let receipt_missing = storage_result.receipt.is_none();
+        let receipt_is_unverifiable_metadata_only = expected.kind == HealObjectKind::Decode
+            && matches!(
+                storage_result.receipt.as_ref().map(|receipt| &receipt.disposition),
+                Some(HealObjectDisposition::MetadataHealthy)
+            );
         if !self.record_verified_storage_receipt(&expected, storage_result.receipt).await {
             let ok_drive_state = DriveState::Ok.to_string();
             let selected_version_matches = storage_result.item.resolved_version_id.is_some_and(|resolved| {
@@ -525,7 +530,7 @@ impl HealTask {
             // original content. Keep the same durable responsibility as an
             // already-healthy Deep result, including when this attempt repaired
             // a shard. Storage errors and invalid receipts never qualify.
-            let healthy_legacy = receipt_missing
+            let healthy_legacy = (receipt_missing || receipt_is_unverifiable_metadata_only)
                 && storage_result.item.legacy_identity_unverified
                 && selected_version_matches
                 && storage_result.item.drives_healed().is_some()
