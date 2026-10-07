@@ -655,7 +655,7 @@ impl HealTask {
                     .drives
                     .iter()
                     .all(|drive| drive.state == ok_drive_state);
-            warn!(
+            debug!(
                 target: "rustfs::heal::debug_probe",
                 bucket,
                 object,
