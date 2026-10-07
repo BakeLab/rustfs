@@ -888,11 +888,20 @@ pub(super) fn unverified_legacy_mrf_event_for_target(
     use crate::heal::outcome::{HealObjectDisposition, HealObjectKind};
     use rustfs_common::mrf_channel::MrfKind;
 
-    let anchor = target.durable_anchor.as_ref()?;
+    let Some(anchor) = target.durable_anchor.as_ref() else {
+        debug!(target: "rustfs::heal::debug_probe", bucket = %target.bucket, object = %target.object, "debug_probe: no durable_anchor on target");
+        return None;
+    };
     if target.kind != MrfKind::PartialWrite
         || outcome.disposition != HealObjectDisposition::Unknown
         || outcome.detail.as_deref() != Some(rustfs_heal_contracts::heal_channel::LEGACY_OBJECT_IDENTITY_UNVERIFIED_DETAIL)
     {
+        debug!(
+            target: "rustfs::heal::debug_probe",
+            bucket = %target.bucket, object = %target.object,
+            target_kind = ?target.kind, outcome_disposition = ?outcome.disposition, outcome_detail = ?outcome.detail,
+            "debug_probe: first gate rejected"
+        );
         return None;
     }
     let version_id = target.version_id.filter(|bytes| *bytes != [0; 16]);
@@ -913,21 +922,49 @@ pub(super) fn unverified_legacy_mrf_event_for_target(
         || outcome.identity.set_index != expected_set
         || outcome.identity.bucket_incarnation_id != Some(anchor.bucket_incarnation_id)
     {
+        debug!(
+            target: "rustfs::heal::debug_probe",
+            bucket = %target.bucket, object = %target.object,
+            anchor_kind_match = (anchor.kind == target.kind),
+            anchor_bucket_match = (anchor.bucket == target.bucket),
+            anchor_object_match = (anchor.object == target.object),
+            anchor_version_match = (anchor.version_id == version_id),
+            anchor_scope_match = (anchor.scope == target.scope),
+            anchor_lease_match = (Some(anchor.lease) == target.lease),
+            identity_kind_is_object = (outcome.identity.kind == HealObjectKind::Object),
+            identity_bucket_match = (outcome.identity.bucket == target.bucket.as_ref()),
+            identity_object_match = (outcome.identity.object == target.object.as_ref()),
+            identity_version_match = (outcome.identity.version_id == expected_version),
+            identity_pool_match = (outcome.identity.pool_index == expected_pool),
+            identity_set_match = (outcome.identity.set_index == expected_set),
+            identity_incarnation_match = (outcome.identity.bucket_incarnation_id == Some(anchor.bucket_incarnation_id)),
+            "debug_probe: second gate rejected"
+        );
         return None;
     }
+    debug!(target: "rustfs::heal::debug_probe", bucket = %target.bucket, object = %target.object, "debug_probe: event accepted, parking should fire");
     Some(rustfs_common::mrf_channel::MrfUnverifiedLegacyEvent { anchor: anchor.clone() })
 }
 
 pub(super) fn publish_unverified_legacy_mrf_events(targets: &[MrfRepairNoticeTarget], completed: &CompletedHealStatus) {
     use crate::heal::outcome::HealExecutionOutcome;
 
+    debug!(
+        target: "rustfs::heal::debug_probe",
+        targets_len = targets.len(),
+        status = ?completed.status,
+        "debug_probe: publish_unverified_legacy_mrf_events called"
+    );
     if !matches!(completed.status, HealTaskStatus::Completed | HealTaskStatus::Failed { .. }) {
+        debug!(target: "rustfs::heal::debug_probe", "debug_probe: rejected by status gate");
         return;
     }
     let Some(outcome) = completed.outcome.as_ref() else {
+        debug!(target: "rustfs::heal::debug_probe", "debug_probe: no outcome present");
         return;
     };
     if outcome.execution != HealExecutionOutcome::Completed {
+        debug!(target: "rustfs::heal::debug_probe", execution = ?outcome.execution, "debug_probe: rejected by execution gate");
         return;
     }
     for target in targets {
