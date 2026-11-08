@@ -52,6 +52,8 @@ env:
 jobs:
   rename-safety:
     name: Rename Safety
+    # Windows runners are available on GitHub Actions, not on our Gitea mirror.
+    if: github.server_url == 'https://github.com'
     runs-on: windows-latest
     timeout-minutes: 60
     steps:
