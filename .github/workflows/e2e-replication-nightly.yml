@@ -57,7 +57,7 @@ jobs:
     # dual-node tests spawn two full rustfs servers each; the extra headroom
     # over the per-PR sm-standard-2 e2e job keeps the parallel process fan-out
     # from starving the runner. Mirrors the ILM serial lane's runner class.
-    runs-on: sm-standard-4
+    runs-on: ubuntu-latest
     timeout-minutes: 45
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
@@ -120,7 +120,7 @@ jobs:
 
   cluster-nightly:
     name: Cluster fault e2e (nightly)
-    runs-on: sm-standard-4
+    runs-on: ubuntu-latest
     timeout-minutes: 90
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
@@ -169,7 +169,7 @@ jobs:
 
   protocols-nightly:
     name: Protocol e2e (nightly)
-    runs-on: sm-standard-4
+    runs-on: ubuntu-latest
     timeout-minutes: 90
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

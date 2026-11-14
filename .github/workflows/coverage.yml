@@ -60,7 +60,7 @@ permissions:
 jobs:
   coverage:
     name: Workspace line coverage
-    runs-on: sm-standard-4
+    runs-on: ubuntu-latest
     # The instrumented build cannot reuse the regular CI cache (different
     # RUSTFLAGS), so a cold run rebuilds the workspace before running the
     # full suite. Two later exact-head runs exhausted 150 minutes before the

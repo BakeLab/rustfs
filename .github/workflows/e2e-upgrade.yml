@@ -53,7 +53,7 @@ env:
 jobs:
   build:
     name: Build upgrade candidate
-    runs-on: sm-standard-2
+    runs-on: [self-hosted, linux, x64, cpu, on-demand]
     timeout-minutes: 60
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
@@ -128,7 +128,7 @@ jobs:
           - name: rc.5 multipart replication baseline
             test: rc5_baseline_replicates_multipart_layouts
             artifact: multipart-layout-baseline
-    runs-on: sm-standard-2
+    runs-on: [self-hosted, linux, x64, cpu, on-demand]
     timeout-minutes: 60
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

@@ -114,7 +114,7 @@ jobs:
     # label was abandoned (no docker.sock on the pod its only run landed on).
     # TODO(ci-8): scheduled-failure alerting (auto-open issue on a red weekly
     # run) is added by the ci-8 composite action; do not implement it here.
-    runs-on: sm-standard-2
+    runs-on: [self-hosted, linux, x64, cpu, on-demand]
     timeout-minutes: 120
     steps:
       - uses: actions/checkout@f548e57e544e1ff5a4c46bf1e1b8685f8e4a348a # v7

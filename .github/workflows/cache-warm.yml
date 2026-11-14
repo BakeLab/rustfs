@@ -103,7 +103,7 @@ jobs:
   # e2e-tests, e2e-full.
   warm-ci-dev:
     name: Warm ci-dev
-    runs-on: sm-standard-4
+    runs-on: ubuntu-latest
     timeout-minutes: 120
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
@@ -193,7 +193,7 @@ jobs:
   # which keeps that lane inside its 30-minute timeout.
   warm-ci-feat-rio:
     name: Warm ci-feat-rio
-    runs-on: sm-standard-4
+    runs-on: ubuntu-latest
     timeout-minutes: 120
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
@@ -224,7 +224,7 @@ jobs:
   # lane actually compiles; running both leaves the union in target/.
   warm-ci-feat-proto:
     name: Warm ci-feat-proto
-    runs-on: sm-standard-4
+    runs-on: ubuntu-latest
     timeout-minutes: 120
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

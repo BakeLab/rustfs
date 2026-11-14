@@ -49,7 +49,7 @@ permissions:
 jobs:
   top-locks:
     name: Verify native Linux x86_64 top.locks service job
-    runs-on: sm-standard-2
+    runs-on: [self-hosted, linux, x64, cpu, on-demand]
     timeout-minutes: 45
     steps:
       - name: Checkout acceptance harness

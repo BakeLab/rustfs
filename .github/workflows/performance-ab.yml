@@ -50,7 +50,7 @@ env:
 jobs:
   warp-ab:
     name: Warp A/B budget gate
-    runs-on: sm-standard-2
+    runs-on: [self-hosted, linux, x64, cpu, on-demand]
     # A normal nightly restores the last successful binary and builds only the
     # candidate; daily access keeps that cache warm. A cache miss may build both
     # and needs room for the A/B run plus artifact and cache publication.

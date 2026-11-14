@@ -63,7 +63,7 @@ jobs:
   cancel-closed-pr-runs:
     name: Cancel Closed PR Runs
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
-    runs-on: sm-standard-2
+    runs-on: [self-hosted, linux, x64, cpu, on-demand]
     timeout-minutes: 10
     steps:
       - name: Explain cancellation run
@@ -72,7 +72,7 @@ jobs:
   classify-changes:
     name: Select CI scope
     if: github.event_name != 'pull_request' || github.event.action != 'closed'
-    runs-on: sm-standard-2
+    runs-on: [self-hosted, linux, x64, cpu, on-demand]
     timeout-minutes: 10
     outputs:
       mode: ${{ steps.scope.outputs.mode }}
@@ -98,7 +98,7 @@ jobs:
   typos:
     name: Typos
     if: github.event_name != 'pull_request' || github.event.action != 'closed'
-    runs-on: sm-standard-2
+    runs-on: [self-hosted, linux, x64, cpu, on-demand]
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@f548e57e544e1ff5a4c46bf1e1b8685f8e4a348a # v7
@@ -115,7 +115,7 @@ jobs:
   quick-checks:
     name: Quick Checks
     if: github.event_name != 'pull_request' || github.event.action != 'closed'
-    runs-on: sm-standard-2
+    runs-on: [self-hosted, linux, x64, cpu, on-demand]
     timeout-minutes: 10
     steps:
       - name: Checkout repository
@@ -130,7 +130,7 @@ jobs:
     name: Workspace Test and Lint
     if: contains(fromJSON('["full", "e2e"]'), needs.classify-changes.outputs.mode) && (github.event_name != 'pull_request' || github.event.action != 'closed')
     needs: [ quick-checks, classify-changes ]
-    runs-on: sm-standard-4
+    runs-on: ubuntu-latest
     timeout-minutes: 90
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
@@ -287,7 +287,7 @@ jobs:
     name: Offline Enrollment E2E Root Boundary
     if: needs.classify-changes.outputs.mode == 'full' && (github.event_name != 'pull_request' || github.event.action != 'closed')
     needs: [ quick-checks, classify-changes ]
-    runs-on: sm-standard-4
+    runs-on: ubuntu-latest
     timeout-minutes: 90
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
@@ -326,7 +326,7 @@ jobs:
     name: ILM Integration (serial)
     if: needs.classify-changes.outputs.mode == 'full' && (github.event_name != 'pull_request' || github.event.action != 'closed')
     needs: [ quick-checks, classify-changes ]
-    runs-on: sm-standard-4
+    runs-on: ubuntu-latest
     timeout-minutes: 90
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
@@ -390,7 +390,7 @@ jobs:
     name: Test and Lint (rio-v2)
     if: needs.classify-changes.outputs.mode == 'full' && (github.event_name != 'pull_request' || github.event.action != 'closed')
     needs: [ quick-checks, classify-changes ]
-    runs-on: sm-standard-4
+    runs-on: ubuntu-latest
     timeout-minutes: 90
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
@@ -448,7 +448,7 @@ jobs:
     name: Connect Short Credential Boundary
     if: needs.classify-changes.outputs.mode == 'full' && (github.event_name != 'pull_request' || github.event.action != 'closed')
     needs: [ quick-checks, classify-changes ]
-    runs-on: sm-standard-4
+    runs-on: ubuntu-latest
     timeout-minutes: 60
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
@@ -506,7 +506,7 @@ jobs:
     name: "Test and Lint (${{ matrix.features.name }})"
     if: needs.classify-changes.outputs.mode == 'full' && (github.event_name != 'pull_request' || github.event.action != 'closed')
     needs: [ quick-checks, classify-changes ]
-    runs-on: sm-standard-4
+    runs-on: ubuntu-latest
     timeout-minutes: 90
     strategy:
       # Preserve both independent results when one protocol fails, so diagnosis
@@ -579,7 +579,7 @@ jobs:
     name: Build RustFS Debug Binary
     if: contains(fromJSON('["full", "e2e"]'), needs.classify-changes.outputs.mode) && (github.event_name != 'pull_request' || github.event.action != 'closed')
     needs: [ quick-checks, classify-changes ]
-    runs-on: sm-standard-4
+    runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
@@ -664,7 +664,7 @@ jobs:
     # docs/architecture/minio-file-format-compat.md ("rio-v2 variant lifecycle").
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
     needs: [ quick-checks ]
-    runs-on: sm-standard-4
+    runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
@@ -774,7 +774,7 @@ jobs:
   e2e-tests:
     name: End-to-End Tests
     needs: [ build-rustfs-debug-binary ]
-    runs-on: sm-standard-2
+    runs-on: [self-hosted, linux, x64, cpu, on-demand]
     timeout-minutes: 30
     steps:
       - name: Checkout repository
@@ -907,7 +907,7 @@ jobs:
       github.event_name == 'merge_group' ||
       (github.event_name == 'push' && github.ref == 'refs/heads/main')
     needs: [ build-rustfs-debug-binary ]
-    runs-on: sm-standard-2
+    runs-on: [self-hosted, linux, x64, cpu, on-demand]
     timeout-minutes: 55
     steps:
       - name: Checkout repository
@@ -1072,7 +1072,7 @@ jobs:
     # event build-rustfs-debug-binary-rio-v2 is skipped, so this job skips
     # with it (see the dormant-variant comment on that job).
     needs: [ build-rustfs-debug-binary-rio-v2 ]
-    runs-on: sm-standard-2
+    runs-on: [self-hosted, linux, x64, cpu, on-demand]
     timeout-minutes: 30
     steps:
       - name: Checkout repository
@@ -1128,7 +1128,7 @@ jobs:
   s3-implemented-tests:
     name: S3 Implemented Tests
     needs: [ build-rustfs-debug-binary, e2e-tests ]
-    runs-on: sm-standard-4
+    runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
       - name: Checkout repository
@@ -1202,7 +1202,7 @@ jobs:
     # already waits on e2e-tests — finishes later anyway, so a green PR's total
     # wall clock is unchanged.
     needs: [ build-rustfs-debug-binary, e2e-tests ]
-    runs-on: sm-standard-4
+    runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
       - name: Checkout repository
@@ -1272,7 +1272,7 @@ jobs:
       - build-rustfs-debug-binary-rio-v2
       - e2e-tests-rio-v2
       - e2e-full
-    runs-on: sm-standard-2
+    runs-on: [self-hosted, linux, x64, cpu, on-demand]
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@f548e57e544e1ff5a4c46bf1e1b8685f8e4a348a # v7
