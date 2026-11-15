@@ -449,7 +449,7 @@ jobs:
           if-no-files-found: error
 
       # Persist the nightly deb on Cloudflare R2 (same channel as package.yml)
-      # so it can be downloaded later with a stable, unauthenticated URL â
+      # so it can be downloaded later with a stable, unauthenticated URL —
       # e.g. https://dl.rustfs.com/artifacts/rustfs/packages/nightly/... .
       # Skipped when the R2 secrets are not configured (artifact-only mode).
       - name: Upload DEB to Cloudflare R2
@@ -466,7 +466,7 @@ jobs:
           set -euo pipefail
 
           if [[ -z "$R2_ACCESS_KEY_ID" || -z "$R2_SECRET_ACCESS_KEY" || -z "$R2_ENDPOINT" || -z "$R2_BUCKET" ]]; then
-            echo "â ï¸ R2 credentials missing, skipping upload"
+            echo "⚠️ R2 credentials missing, skipping upload"
             exit 0
           fi
 
@@ -505,16 +505,16 @@ jobs:
 
           R2_PREFIX="s3://${R2_BUCKET}/artifacts/rustfs/packages/nightly/"
 
-          echo "ð¤ Uploading ${DEB_FILE} to ${R2_PREFIX}"
+          echo "📤 Uploading ${DEB_FILE} to ${R2_PREFIX}"
           "${AWS_CLI}" s3 cp "${DEB_FILE}" "${R2_PREFIX}" --endpoint-url "$R2_ENDPOINT" --only-show-errors
 
           # Stable "latest" alias so tests can fetch the newest nightly
           # without knowing today's date.
-          echo "ð¤ Uploading latest alias"
+          echo "📤 Uploading latest alias"
           "${AWS_CLI}" s3 cp "${DEB_FILE}" "${R2_PREFIX}rustfs-nightly-latest.deb" \
             --endpoint-url "$R2_ENDPOINT" --only-show-errors
 
-          echo "â R2 upload complete"
+          echo "✅ R2 upload complete"
 
           CANDIDATE_FILE="${RUNNER_TEMP}/nightly-candidate-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}.json"
           jq -n --arg source_sha "${SOURCE_SHA}" \
@@ -637,7 +637,7 @@ jobs:
   # Vault Transit backends to every for_each_backend spec in
   # crates/kms/tests/behavior_*.rs (see crates/kms/AGENTS.md). rotate and
   # versioning are advertised only by the Vault backends, so without this lane
-  # no CI run ever asserts the working half of behavior_rotation.rs â a
+  # no CI run ever asserts the working half of behavior_rotation.rs — a
   # rotation that silently dropped historical key versions would stay green.
   # The same lane runs the dev-Vault #[ignore] tests and the two self-hosting
   # live scripts (AppRole login, three-node Raft leader failover).
@@ -658,7 +658,7 @@ jobs:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
       # Root token of the ephemeral loopback dev server. Not a secret: the
       # server lives only for this job, listens on 127.0.0.1, and holds only
-      # keys the tests create. The literal value matters â the dev-Vault
+      # keys the tests create. The literal value matters — the dev-Vault
       # #[ignore] fixtures in crates/kms/src/backends/vault.rs hardcode it.
       VAULT_LANE_TOKEN: dev-only-token
       VAULT_LANE_ADDR: http://127.0.0.1:8200
@@ -731,7 +731,7 @@ jobs:
           RUSTFS_KMS_VAULT_TOKEN: ${{ env.VAULT_LANE_TOKEN }}
           RUSTFS_KMS_VAULT_ADDR: ${{ env.VAULT_LANE_ADDR }}
         # Filters select the dev-Vault-only #[ignore] tests. The AWS #[ignore]
-        # tests (backends::aws, service_manager) stay excluded â they need real
+        # tests (backends::aws, service_manager) stay excluded — they need real
         # AWS credentials and create billable keys. The AppRole and HA #[ignore]
         # tests are excluded here because their own scripts below provision the
         # Vault topology they need.
