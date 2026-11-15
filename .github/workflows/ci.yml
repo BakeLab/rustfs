@@ -105,9 +105,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Install typos download dependency
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends wget
+        run: bash scripts/ci/install-runner-packages.sh wget
       - name: Typos check with custom config file
         uses: crate-ci/typos@512fc24f32f44ab01972217aaaf3dc86ec234d53 # v1.50.2
 
@@ -796,7 +794,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
-          python-version: "3.12"
+          python-version: "3.14"
 
       - name: Install awscurl
         run: |
@@ -925,7 +923,7 @@ jobs:
 
       - name: Install network fault-injection tools
         run: |
-          sudo apt-get install -y iptables
+          bash scripts/ci/install-runner-packages.sh iptables
           sudo -n iptables --version
           # The endpoint-blackhole heal scenario needs CAP_NET_ADMIN. Containerised
           # runners can run iptables but not touch the rule set; the test then logs
@@ -937,7 +935,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
-          python-version: "3.12"
+          python-version: "3.14"
 
       - name: Install awscurl
         run: |
@@ -1101,9 +1099,7 @@ jobs:
       # toolchain, unlike GitHub-hosted ubuntu-latest. Installing s3s-e2e below
       # compiles it from source on a cache miss, and build scripts need cc.
       - name: Install build tools for s3s-e2e compilation
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y build-essential cmake pkg-config libssl-dev
+        run: bash scripts/ci/install-runner-packages.sh core
 
       - name: Install s3s-e2e test tool
         uses: taiki-e/cache-cargo-install-action@7447f04c51f2ba27ca35e7f1e28fab848c5b3ba7 # v2
