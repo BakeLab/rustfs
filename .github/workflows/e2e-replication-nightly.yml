@@ -79,7 +79,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
-          python-version: "3.12"
+          python-version: "3.14"
 
       - name: Install awscurl
         run: |
@@ -190,8 +190,7 @@ jobs:
 
       - name: Install and verify protocol socket oracle
         run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y -qq iproute2
+          bash scripts/ci/install-runner-packages.sh iproute2
           ss -tn state CLOSE-WAIT >/dev/null
 
       - name: Build protocol server

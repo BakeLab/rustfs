@@ -57,26 +57,20 @@ runs:
   using: "composite"
   steps:
     # protobuf-compiler is deliberately absent: the setup-protoc step below
-    # installs 35.1 into the tool cache and prepends it to PATH, so the apt
+    # installs 35.1 into the tool cache and prepends it to PATH, so the system
     # build (older, and never version-matched) was shadowed on every run and
     # simply never used.
-    - name: Install system dependencies (Ubuntu)
+    - name: Install system dependencies
       if: runner.os == 'Linux'
       shell: bash
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y \
-          build-essential \
-          pkg-config \
-          libssl-dev \
-          ripgrep
+      run: bash scripts/ci/install-runner-packages.sh core
 
     # musl-gcc is needed by the native musl release leg, and zip/unzip by the
     # release packaging steps. No CI test lane touches any of them.
-    - name: Install packaging and cross-linking dependencies (Ubuntu)
+    - name: Install packaging and cross-linking dependencies
       if: runner.os == 'Linux' && inputs.install-build-packaging-tools == 'true'
       shell: bash
-      run: sudo apt-get install -y musl-tools zip unzip
+      run: bash scripts/ci/install-runner-packages.sh packaging
 
     - name: Install protoc
       uses: rustfs/setup-protoc@a3705324d8f9bf5b6c3573fb6cf8ae421db55dd6 # v3.0.1
