@@ -6,10 +6,11 @@ import hashlib
 import json
 from pathlib import Path
 import re
-import subprocess
+import shutil
 import sys
 import tempfile
 from urllib.parse import quote
+from urllib.request import Request, urlopen
 
 
 def download(repository, tag, name, output, expected_sha256=None):
@@ -19,11 +20,12 @@ def download(repository, tag, name, output, expected_sha256=None):
         raise ValueError("invalid release tag or asset name")
     if expected_sha256 is not None and not re.fullmatch(r"[0-9a-f]{64}", expected_sha256):
         raise ValueError("invalid pinned asset digest")
-    result = subprocess.run(
-        ["gh", "api", "--hostname", "github.com", f"repos/{repository}/releases/tags/{quote(tag, safe='')}"],
-        check=True, capture_output=True, text=True, timeout=60,
+    request = Request(
+        f"https://api.github.com/repos/{repository}/releases/tags/{quote(tag, safe='')}",
+        headers={"Accept": "application/vnd.github+json"},
     )
-    release = json.loads(result.stdout)
+    with urlopen(request, timeout=60) as response:
+        release = json.load(response)
     if not isinstance(release, dict) or release.get("tag_name") != tag:
         raise ValueError("release metadata does not match the requested tag")
     assets = release.get("assets")
@@ -47,12 +49,12 @@ def download(repository, tag, name, output, expected_sha256=None):
     try:
         with tempfile.NamedTemporaryFile(dir=output.parent, prefix=".release-asset-", delete=False) as stream:
             temporary = Path(stream.name)
-            # gh authenticates to the API; its HTTP client strips credentials on
-            # cross-host redirects. No browser URL or token is supplied in argv.
-            subprocess.run(
-                ["gh", "api", "--hostname", "github.com", "--header", "Accept: application/octet-stream", f"repos/{repository}/releases/assets/{asset_id}"],
-                check=True, stdout=stream, timeout=300,
+            request = Request(
+                f"https://api.github.com/repos/{repository}/releases/assets/{asset_id}",
+                headers={"Accept": "application/octet-stream"},
             )
+            with urlopen(request, timeout=300) as response:
+                shutil.copyfileobj(response, stream)
         with temporary.open("rb") as stream:
             actual = hashlib.file_digest(stream, "sha256").hexdigest()
         if temporary.stat().st_size != size or actual != sha256:
@@ -74,7 +76,7 @@ def main():
     args = parser.parse_args()
     try:
         download(args.repository, args.tag, args.asset, args.output, args.sha256)
-    except (ValueError, KeyError, TypeError, json.JSONDecodeError, subprocess.SubprocessError, OSError) as error:
+    except (ValueError, KeyError, TypeError, json.JSONDecodeError, OSError) as error:
         print(f"Release asset download failed: {error}", file=sys.stderr)
         return 1
     return 0
