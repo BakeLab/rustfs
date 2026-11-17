@@ -32,11 +32,6 @@
       "os": "macos",
       "arch": "aarch64",
       "abi": "none"
-    },
-    {
-      "os": "windows",
-      "arch": "x86_64",
-      "abi": "msvc"
     }
   ],
   "targets_basis": "Platform matrix of .github/workflows/build.yml (prepare-platform-matrix). gnu and macOS targets build with the pyroscope feature; musl and Windows targets build with no extra features.",

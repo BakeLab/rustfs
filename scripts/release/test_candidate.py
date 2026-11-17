@@ -184,9 +184,9 @@ class ArtifactIdentityTests(unittest.TestCase):
         self.inputs = inputs()
         self.records = [candidate.archive_record(archive(self.root, target), target, self.inputs) for target in candidate.TARGETS]
 
-    def test_all_six_final_artifacts_bind_exact_bytes(self):
+    def test_all_five_final_artifacts_bind_exact_bytes(self):
         value = candidate.certification_candidate(self.inputs, self.records, self.root)
-        self.assertEqual(len(value["deliverables"]), 6)
+        self.assertEqual(len(value["deliverables"]), 5)
         self.assertEqual(value["version"], "1.2.3")
         self.assertEqual(value["release_profile"], "stable")
         self.assertEqual(value["validation_batch"], {"run_id": "1.2.3-preview.7", "run_attempt": 1})

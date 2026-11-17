@@ -396,7 +396,7 @@
       "monitor": "workflow",
       "max_age_hours": 36,
       "result_owner": "build.yml",
-      "disposition": "Daily cron builds Linux; Sunday 16:17 UTC builds macOS and Windows. Public release writes belong to release-publish.yml.",
+      "disposition": "Daily cron builds Linux; Sunday 16:17 UTC builds macOS. Public release writes belong to release-publish.yml.",
       "failure_owner": "workflow",
       "origin": "baseline",
       "alert_contract": "scheduled-validation"
@@ -1827,29 +1827,6 @@
       "failure_owner": "workflow",
       "origin": "baseline",
       "alert_contract": "independent"
-    },
-    {
-      "workflow": ".github/workflows/windows-filesystem.yml",
-      "name": "Windows Filesystem Tests",
-      "roles": [
-        "pr",
-        "manual"
-      ],
-      "events": [
-        "push",
-        "pull_request",
-        "workflow_dispatch"
-      ],
-      "cadence": "event",
-      "timezone": "UTC",
-      "schedule": [],
-      "owner": "@overtrue",
-      "policy": "active",
-      "monitor": "none",
-      "result_owner": "windows-filesystem.yml",
-      "disposition": "retained independent entry",
-      "monitor_reason": "Event-driven or operator-requested work has no periodic freshness obligation.",
-      "origin": "baseline"
     },
     {
       "workflow": ".github/workflows/release-candidate.yml",

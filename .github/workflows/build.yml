@@ -13,7 +13,7 @@
 # limitations under the License.
 
 # Scheduled development artifacts and reusable immutable-candidate builds.
-# The daily cron builds Linux. Sunday 16:17 UTC builds macOS and Windows.
+# The daily cron builds Linux. Sunday 16:17 UTC builds macOS.
 # Public release writes live exclusively in release-publish.yml. Candidate callers
 # select Linux or desktop and pin release inputs before any matrix starts.
 
@@ -32,7 +32,7 @@ on:
         type: string
   schedule:
     - cron: "13 1 * * *" # Daily Linux, 01:13 UTC
-    - cron: "17 16 * * 0" # Weekly macOS and Windows, Sunday 16:17 UTC
+    - cron: "17 16 * * 0" # Weekly macOS, Sunday 16:17 UTC
   workflow_dispatch:
     inputs:
       publish:
@@ -262,8 +262,7 @@ jobs:
             {"target_id":"linux-aarch64-musl","os":"ubicloud-standard-16-arm","target":"aarch64-unknown-linux-musl","cross":false,"platform":"linux","rustflags":"","features":"","glibc":""},
             {"target_id":"linux-x86_64-gnu","os":"sm-standard-4","target":"x86_64-unknown-linux-gnu","cross":true,"platform":"linux","rustflags":"","features":"pyroscope","glibc":"2.31"},
             {"target_id":"linux-aarch64-gnu","os":"ubicloud-standard-16-arm","target":"aarch64-unknown-linux-gnu","cross":true,"platform":"linux","rustflags":"","features":"pyroscope","glibc":"2.31"},
-            {"target_id":"macos-aarch64","os":"macos-latest-xlarge","target":"aarch64-apple-darwin","cross":false,"platform":"macos","rustflags":"","features":"pyroscope","glibc":""},
-            {"target_id":"windows-x86_64","os":"windows-latest","target":"x86_64-pc-windows-msvc","cross":false,"platform":"windows","rustflags":"","features":"","glibc":""}
+            {"target_id":"macos-aarch64","os":"macos-latest-xlarge","target":"aarch64-apple-darwin","cross":false,"platform":"macos","rustflags":"","features":"pyroscope","glibc":""}
           ]}'
 
           if [[ "$selected" == "linux" || "$selected" == "desktop" ]]; then
