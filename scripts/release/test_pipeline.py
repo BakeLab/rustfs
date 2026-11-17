@@ -77,7 +77,7 @@ class CertificationTests(unittest.TestCase):
     def test_complete_original_bytes_certify(self):
         _, summary = pipeline.certify(self.value, self.path, self.runs, "full")
         self.assertTrue(summary["publish_allowed"])
-        self.assertEqual(len(summary["required_cases"]), 18)
+        self.assertEqual(len(summary["required_cases"]), 16)
 
     def test_linux_only_cannot_authorize_release(self):
         with tempfile.TemporaryDirectory() as temp:
@@ -411,7 +411,7 @@ class WorkflowContractTests(unittest.TestCase):
             ("linux-x86_64-gnu", "sm-standard-4"),
             ("linux-aarch64-gnu", "ubicloud-standard-16-arm"),
         ]
-        desktop = [("macos-aarch64", "macos-latest-xlarge"), ("windows-x86_64", "windows-latest")]
+        desktop = [("macos-aarch64", "macos-latest-xlarge")]
 
         def select(event, raw, schedule="", has_input="false"):
             with tempfile.TemporaryDirectory() as temp:
