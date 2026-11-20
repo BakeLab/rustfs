@@ -55,9 +55,8 @@ permissions:
 # finish so a busy merge stream cannot starve the complete baseline. For main,
 # GitHub retains one running run and replaces the pending run with the latest.
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
-
+  group: ci-${{ github.event_name }}-${{ (github.event_name == 'push' || github.event_name == 'pull_request') && (github.event.pull_request.number || github.ref) || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'push' || github.event_name == 'pull_request' }}
 env:
   CARGO_TERM_COLOR: always
   RUST_BACKTRACE: 1
